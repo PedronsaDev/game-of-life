@@ -1,0 +1,16 @@
+[
+  {
+    "file": "main.c",
+    "arguments": [
+      "gcc",
+      "-Wall",
+      "-std=c99",
+      "-c",
+      "main.c",
+      "-o",
+      "main.o"
+    ],
+    "directory": "/home/pedronsa/projects/raylib/game_of_life",
+    "output": "main.o"
+  }
+]
