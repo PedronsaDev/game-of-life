@@ -1,10 +1,10 @@
 #include <raylib.h>
 #include <stdbool.h>
 
-#define ROWS 30
-#define COLS 30
+#define ROWS 35
+#define COLS 35
 
-const int screenWidth = 800;
+const int screenWidth = 750;
 const int screenHeight = 800;
 
 const int cellWidth = 20;
@@ -19,9 +19,9 @@ typedef struct Cell
 
 void CellDraw(Cell cell, float offsetX, float offsetY);
 bool IndexIsValid(int i, int j);
-void ToggleCellState(Cell grid[ROWS][COLS], int i, int j);
+int ToggleCellState(Cell grid[ROWS][COLS], int i, int j);
+void SetCellState(Cell grid[ROWS][COLS], int i, int j, int state);
 void ClearGrid(Cell grid[ROWS][COLS]);
-
 int CountNeighbors(Cell grid[ROWS][COLS], int r, int c);
 void Update(Cell grid[ROWS][COLS]);
 
@@ -49,21 +49,30 @@ int main(void)
     bool simulationActive = false;
     float timer = 0;
 
-    float offsetY = (float)((screenHeight - (cellHeight * ROWS)) / 2) + 50; 
+    float offsetY = (float)((screenHeight - (cellHeight * ROWS)) / 2) + 25; 
     float offsetX = (float)(screenWidth - (cellWidth * COLS)) / 2; 
 
     // Main game loop
     while (!WindowShouldClose()) 
     {
+        int currentState;
+        Vector2 mPos = GetMousePosition();
+        int indexI = (mPos.x - offsetX) / cellWidth;
+        int indexJ = (mPos.y - offsetY) / cellHeight;
+
         if(IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         {
-            Vector2 mPos = GetMousePosition();
-            int indexI = (mPos.x - offsetX) / cellWidth;
-            int indexJ = (mPos.y - offsetY) / cellHeight;
-
             if(IndexIsValid(indexI, indexJ))
             {
-                ToggleCellState(grid, indexI, indexJ);
+                currentState = ToggleCellState(grid, indexI, indexJ);
+            }
+        }
+
+        if(IsMouseButtonDown(MOUSE_BUTTON_LEFT))
+        {
+            if (IndexIsValid(indexI, indexJ)) 
+            {
+                SetCellState(grid, indexI, indexJ, currentState);
             }
         }
 
@@ -88,7 +97,7 @@ int main(void)
         // Draw visuals
         BeginDrawing();
 
-            ClearBackground(GRAY);
+            ClearBackground(DARKGRAY);
 
             for (int i = 0; i < COLS; i++) 
             {
@@ -124,15 +133,20 @@ bool IndexIsValid(int i, int j)
     return i >= 0 && i < COLS && j >=0 && j< ROWS;
 }
 
-void ToggleCellState(Cell grid[ROWS][COLS], int i, int j)
+int ToggleCellState(Cell grid[ROWS][COLS], int i, int j)
 {
+    int state = 0;
     if(grid[i][j].state == 0)
-        grid[i][j].state = 1;
-    else
-        grid[i][j].state = 0;
+        state = 1;
+
+    return grid[i][j].state = state;
 }
 
-// Game logic
+void SetCellState(Cell grid[ROWS][COLS], int i, int j, int state)
+{
+    grid[i][j].state = state;
+}
+
 int CountNeighbors(Cell grid[ROWS][COLS], int r, int c)
 {
     int count = 0;
